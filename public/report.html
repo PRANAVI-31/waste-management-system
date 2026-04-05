@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Issue | Campus Eco</title>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="index.html" class="brand">
+            <i class="fa-solid fa-leaf"></i>
+            <span>EcoCampus</span>
+        </a>
+        <ul class="nav-links">
+            <li>
+                <a href="index.html" class="nav-link">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="report.html" class="nav-link active">
+                    <i class="fa-solid fa-camera"></i>
+                    <span>Report Issue</span>
+                </a>
+            </li>
+            <li>
+                <a href="view_reports.html" class="nav-link">
+                    <i class="fa-solid fa-images"></i>
+                    <span>View Reports</span>
+                </a>
+            </li>
+            <li>
+                <a href="locations.html" class="nav-link">
+                    <i class="fa-solid fa-trash-can"></i>
+                    <span>Bin Locations</span>
+                </a>
+            </li>
+            <li>
+                <a href="settings.html" class="nav-link">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li>
+                <a href="qr.html" class="nav-link">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <span>QR Posters</span>
+                </a>
+            </li>
+        </ul>
+</aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header>
+            <div class="page-title">
+                <h1>Report an Issue</h1>
+                <p>Help us keep the campus clean by reporting overflowing bins or scattered waste.</p>
+            </div>
+            <div class="user-profile">
+                <div class="profile-img">S</div>
+                <div>
+                    <strong style="display: block; font-size: 0.9rem;">Student User</strong>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Computer Science</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <div class="card guidance-container" style="grid-column: span 12; margin-top: 0; margin-bottom: 2rem;">
+                <div class="report-wrapper">
+                    <h2 style="margin-bottom: 1.5rem; text-align: center;">Submit a Report</h2>
+                    <form id="reportForm">
+                        <div class="form-group">
+                            <label class="form-label">Location</label>
+                            <select class="form-control" id="location" required>
+                                <option value="" disabled selected>Select location on campus</option>
+                                <option value="Main Library">Main Library</option>
+                                <option value="Cafeteria North">Cafeteria North</option>
+                                <option value="Science Block A">Science Block A</option>
+                                <option value="Dormitory Plaza">Dormitory Plaza</option>
+                                <option value="Sports Complex">Sports Complex</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Issue Description</label>
+                            <textarea class="form-control" id="description" placeholder="E.g., The recyclable bin is overflowing and scattered across the pathway." required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Upload Image (Optional but recommended)</label>
+                            <div style="border: 2px dashed #D1D5DB; padding: 2rem; border-radius: var(--radius-md); text-align: center; cursor: pointer; transition: background 0.3s;" onmouseover="this.style.background='#F3F4F6'" onmouseout="this.style.background='transparent'">
+                                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 10px;"></i>
+                                <p style="color: var(--text-muted);">Click to upload or drag and drop</p>
+                                <input type="file" id="image" style="display:none;" accept="image/*">
+                            </div>
+                        </div>
+
+                        <div id="statusMessage" style="margin-bottom: 15px; display: none; padding: 10px; border-radius: 8px;"></div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <i class="fa-solid fa-paper-plane"></i> Submit Report
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    document.querySelector('.fa-cloud-arrow-up').parentElement.addEventListener('click', function() {
+        document.getElementById('image').click();
+    });
+
+    document.getElementById('reportForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const location = document.getElementById('location').value;
+        const description = document.getElementById('description').value;
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const statusMsg = document.getElementById('statusMessage');
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+        
+        try {
+            const response = await fetch('/api/reports', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    location,
+                    description,
+                    image_url: 'dummy_image_url.jpg' // simulating image upload
+                })
+            });
+            
+            const data = await response.json();
+            
+            if(response.ok) {
+                statusMsg.style.display = 'block';
+                statusMsg.style.backgroundColor = '#E8F5E9';
+                statusMsg.style.color = '#2E7D32';
+                statusMsg.innerHTML = '<i class="fa-solid fa-circle-check"></i> Report submitted successfully! Thank you for keeping our campus clean.';
+                this.reset();
+            } else {
+                throw new Error(data.error);
+            }
+        } catch (error) {
+            statusMsg.style.display = 'block';
+            statusMsg.style.backgroundColor = '#FFEBEE';
+            statusMsg.style.color = '#C62828';
+            statusMsg.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Error: ' + error.message;
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Report';
+        }
+    });
+</script>
+</body>
+</html>

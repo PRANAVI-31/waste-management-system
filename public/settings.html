@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | Campus Eco</title>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="index.html" class="brand">
+            <i class="fa-solid fa-leaf"></i>
+            <span>EcoCampus</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html" class="nav-link"><i class="fa-solid fa-chart-line"></i><span>Dashboard</span></a></li>
+            <li><a href="report.html" class="nav-link"><i class="fa-solid fa-camera"></i><span>Report Issue</span></a></li>
+            <li><a href="view_reports.html" class="nav-link"><i class="fa-solid fa-images"></i><span>View Reports</span></a></li>
+            <li><a href="locations.html" class="nav-link"><i class="fa-solid fa-trash-can"></i><span>Bin Locations</span></a></li>
+            <li><a href="settings.html" class="nav-link active"><i class="fa-solid fa-gear"></i><span>Settings</span></a></li>
+            <li><a href="qr.html" class="nav-link"><i class="fa-solid fa-qrcode"></i><span>QR Posters</span></a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <div class="page-title">
+                <h1>Settings</h1>
+                <p>Customize your dashboard and environmental goals.</p>
+            </div>
+            <div class="user-profile">
+                <div class="profile-img">A</div>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <div class="card" style="grid-column: span 12;">
+                <div class="card-title">User Preferences</div>
+                <form id="settingsForm">
+                    <div class="form-group">
+                        <label class="form-label">System Notifications</label>
+                        <div style="display: flex; gap: 20px; align-items: center;">
+                            <input type="checkbox" id="notifications-toggle" style="width: 24px; height: 24px;">
+                            <span style="color: var(--text-muted);">Receive alerts from full bins and maintenance reports.</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Campus Eco-Goal (Weekly %)</label>
+                        <input type="range" class="form-control" id="eco-goal-range" min="50" max="100" value="85" style="background: none; padding: 0;">
+                        <div style="display: flex; justify-content: space-between; font-weight: 500;">
+                            <span>50%</span>
+                            <span id="goal-val">85%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Default Dashboard Theme</label>
+                        <select class="form-control" id="theme-select">
+                            <option value="Eco-Default">Eco-Default (Soft Green)</option>
+                            <option value="Dark-Mode">Dark-Mode (Deep Green)</option>
+                            <option value="Minimalist">Minimalist (Pure White)</option>
+                        </select>
+                    </div>
+
+                    <div id="settings-msg" style="margin-bottom: 15px; display: none; padding: 10px; border-radius: 8px;"></div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Settings
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    const settingsForm = document.getElementById('settingsForm');
+    const range = document.getElementById('eco-goal-range');
+    const goalVal = document.getElementById('goal-val');
+
+    range.addEventListener('input', (e) => {
+        goalVal.textContent = e.target.value + '%';
+    });
+
+    async function loadSettings() {
+        try {
+            const resp = await fetch('/api/settings');
+            const data = await resp.json();
+            document.getElementById('notifications-toggle').checked = data.notifications;
+            document.getElementById('eco-goal-range').value = data.eco_goal;
+            document.getElementById('goal-val').textContent = data.eco_goal + '%';
+            document.getElementById('theme-select').value = data.theme;
+        } catch (e) { console.error('Error loading settings:', e); }
+    }
+
+    settingsForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const msg = document.getElementById('settings-msg');
+        msg.style.display = 'block';
+        msg.style.backgroundColor = '#E1F5FE';
+        msg.style.color = '#03A9F4';
+        msg.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+        try {
+            const resp = await fetch('/api/settings', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    notifications: document.getElementById('notifications-toggle').checked,
+                    eco_goal: parseInt(document.getElementById('eco-goal-range').value),
+                    theme: document.getElementById('theme-select').value
+                })
+            });
+            if (resp.ok) {
+                msg.style.backgroundColor = '#E8F5E9';
+                msg.style.color = '#2E7D32';
+                msg.innerHTML = '<i class="fa-solid fa-circle-check"></i> Settings saved successfully!';
+                setTimeout(() => msg.style.display = 'none', 3000);
+            }
+        } catch (e) {
+            msg.style.backgroundColor = '#FFEBEE';
+            msg.style.color = '#F44336';
+            msg.innerHTML = 'Error: ' + e.message;
+        }
+    });
+
+    loadSettings();
+</script>
+</body>
+</html>

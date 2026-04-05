@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bin Locations | Campus Eco</title>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .map-placeholder {
+            width: 100%;
+            height: 450px;
+            background: #E5E7EB;
+            border-radius: var(--radius-lg);
+            position: relative;
+            overflow: hidden;
+            background-image: radial-gradient(#D1D5DB 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .map-placeholder::after {
+            content: "Campus Layout View (Simulated)";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #9CA3AF;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .map-marker {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .map-marker:hover {
+            transform: scale(1.3);
+            z-index: 10;
+        }
+
+        .marker-label {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            font-weight: 600;
+        }
+
+        .map-marker:hover .marker-label { opacity: 1; }
+
+        /* Sample market positions for visual interest */
+        .m1 { top: 20%; left: 30%; background: var(--waste-recyclable); }
+        .m2 { top: 45%; left: 70%; background: var(--waste-wet); }
+        .m3 { top: 75%; left: 40%; background: var(--waste-dry); }
+        .m4 { top: 15%; left: 80%; background: var(--waste-recyclable); }
+
+        .location-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="index.html" class="brand">
+            <i class="fa-solid fa-leaf"></i>
+            <span>EcoCampus</span>
+        </a>
+        <ul class="nav-links">
+            <li>
+                <a href="index.html" class="nav-link">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="report.html" class="nav-link">
+                    <i class="fa-solid fa-camera"></i>
+                    <span>Report Issue</span>
+                </a>
+            </li>
+            <li>
+                <a href="view_reports.html" class="nav-link">
+                    <i class="fa-solid fa-images"></i>
+                    <span>View Reports</span>
+                </a>
+            </li>
+            <li>
+                <a href="locations.html" class="nav-link active">
+                    <i class="fa-solid fa-trash-can"></i>
+                    <span>Bin Locations</span>
+                </a>
+            </li>
+            <li>
+                <a href="settings.html" class="nav-link">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li>
+                <a href="qr.html" class="nav-link">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <span>QR Posters</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <header>
+            <div class="page-title">
+                <h1>Bin Locations</h1>
+                <p>Track smart bin placements across our eco-campus.</p>
+            </div>
+            <div class="user-profile">
+                <div class="profile-img">A</div>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <div class="card" style="grid-column: span 12;">
+                <div class="card-title">Interactive Campus Map</div>
+                <div class="map-placeholder">
+                    <div class="map-marker m1"><span class="marker-label">Library Entrance</span></div>
+                    <div class="map-marker m2"><span class="marker-label">Cafeteria North</span></div>
+                    <div class="map-marker m3"><span class="marker-label">Science Block</span></div>
+                    <div class="map-marker m4"><span class="marker-label">Admin Office</span></div>
+                </div>
+            </div>
+
+            <div class="card" style="grid-column: span 12;">
+                <div class="card-title">Detailed List & Status</div>
+                <div id="locations-list" class="bin-list">
+                    <!-- Loaded via JS -->
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+    // Specific JS for locations if needed or use shared logic
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchBins(); // Shared logic from main.js will populate bin-list
+    });
+</script>
+</body>
+</html>

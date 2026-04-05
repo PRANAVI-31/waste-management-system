@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Waste Dashboard | Campus Eco</title>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="index.html" class="brand">
+            <i class="fa-solid fa-leaf"></i>
+            <span>EcoCampus</span>
+        </a>
+        <ul class="nav-links">
+            <li>
+                <a href="index.html" class="nav-link active">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="report.html" class="nav-link">
+                    <i class="fa-solid fa-camera"></i>
+                    <span>Report Issue</span>
+                </a>
+            </li>
+            <li>
+                <a href="view_reports.html" class="nav-link">
+                    <i class="fa-solid fa-images"></i>
+                    <span>View Reports</span>
+                </a>
+            </li>
+            <li>
+                <a href="locations.html" class="nav-link">
+                    <i class="fa-solid fa-trash-can"></i>
+                    <span>Bin Locations</span>
+                </a>
+            </li>
+            <li>
+                <a href="settings.html" class="nav-link">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li>
+                <a href="qr.html" class="nav-link">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <span>QR Posters</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header>
+            <div class="page-title">
+                <h1>Overview</h1>
+                <p>Welcome back! Here's the campus sustainability status today.</p>
+            </div>
+            <div class="user-profile">
+                <div class="profile-img">A</div>
+                <div>
+                    <strong style="display: block; font-size: 0.9rem;">Admin User</strong>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Campus Management</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Stat Cards -->
+            <div class="card stat-card">
+                <div>
+                    <div class="stat-icon green">
+                        <i class="fa-solid fa-weight-scale"></i>
+                    </div>
+                    <div class="stat-label">Total Collected (Today)</div>
+                    <div class="stat-value" id="daily-collected">-- kg</div>
+                </div>
+            </div>
+            
+            <div class="card stat-card">
+                <div>
+                    <div class="stat-icon blue">
+                        <i class="fa-solid fa-recycle"></i>
+                    </div>
+                    <div class="stat-label">Recycling Rate</div>
+                    <div class="stat-value" id="recycling-rate">--%</div>
+                </div>
+            </div>
+            
+            <div class="card stat-card">
+                <div>
+                    <div class="stat-icon orange">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div class="stat-label">Active Alerts</div>
+                    <div class="stat-value" id="active-alerts">--</div>
+                </div>
+            </div>
+
+            <div class="card stat-card">
+                <div>
+                    <div class="stat-icon purple">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                    </div>
+                    <div class="stat-label">Weekly Trend</div>
+                    <div class="stat-value" id="weekly-trend">--</div>
+                </div>
+            </div>
+
+            <!-- Segregation Overview (Doughnut) -->
+            <div class="card" style="grid-column: span 4; display: flex; flex-direction: column;">
+                <div class="card-title">Segregation Overview</div>
+                <div style="flex: 1; min-height: 250px; position: relative; display: flex; align-items: center; justify-content: center;">
+                    <canvas id="segregationChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Weekly Activity (Bar) -->
+            <div class="card" style="grid-column: span 8; display: flex; flex-direction: column;">
+                <div class="card-title">Weekly Activity Trends (kg)</div>
+                <div style="flex: 1; min-height: 250px; position: relative;">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Sustainability Score -->
+            <div class="card sustainability-card" style="grid-column: span 4;">
+                <div class="card-title" style="margin-bottom: 0;">Campus Eco-Score</div>
+                <div class="score-circle">
+                    <div class="score-inner">
+                        <span id="eco-score">--</span>
+                        <small>out of 100</small>
+                    </div>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Great job! You're saving the planet one bin at a time.</p>
+            </div>
+
+            <!-- Smart Bin Monitoring -->
+            <div class="card bins-container">
+                <div class="card-title">
+                    <span>Smart Bin Status</span>
+                    <a href="#" style="font-size: 0.8rem; color: var(--primary-color); text-decoration: none;">View All</a>
+                </div>
+                <div class="bin-list" id="bin-list">
+                    <!-- Dynamic bin items will be loaded here -->
+                    <div style="text-align: center; padding: 20px; color: var(--text-muted);">Loading bins...</div>
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="card notifications-container">
+                <div class="card-title">Notifications</div>
+                <div class="notification-list" id="notification-list">
+                    <!-- Dynamic notifications will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Segregation Guidance -->
+            <div class="card guidance-container">
+                <div class="card-title">Waste Segregation Guide</div>
+                <div class="guidance-grid">
+                    <div class="guide-card wet">
+                        <div class="guide-icon"><i class="fa-solid fa-apple-whole"></i></div>
+                        <h3>Wet Waste</h3>
+                        <p>Food scraps, fruit peels, tea bags, leftover food. Goes to composting.</p>
+                    </div>
+                    <div class="guide-card dry">
+                        <div class="guide-icon"><i class="fa-solid fa-box"></i></div>
+                        <h3>Dry Waste</h3>
+                        <p>Plastics, wrappers, foil, styrofoam. Ensure they are dry and clean.</p>
+                    </div>
+                    <div class="guide-card recyclable">
+                        <div class="guide-icon"><i class="fa-solid fa-bottle-water"></i></div>
+                        <h3>Recyclable</h3>
+                        <p>Paper, cardboard, glass bottles, metal cans. Clean them before binning.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>
