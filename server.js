@@ -1,8 +1,6 @@
 require('dotenv').config(); // Must be first
 
 const express = require('express');
-const { createClient } = require('@supabase/supabase-js');
-const supabaseClient = require('./supabaseClient'); // Import first
 
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
@@ -138,20 +136,6 @@ app.get('/api/notifications', (req,res)=>{
   ]});
 });
 
-// ----------------- Supabase Route -----------------
-app.get('/supabase-data', async (req, res) => {
-  try {
-    const { data, error } = await supabaseClient
-      .from('waste_reports') // <-- Replace with your Supabase table name
-      .select('*');
-
-    if (error) throw error;
-
-    res.json(data);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 // ----------------- Start Server -----------------
 app.listen(PORT, '0.0.0.0', () => console.log(`Server is running on http://0.0.0.0:${PORT}`));
